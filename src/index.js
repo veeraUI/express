@@ -1,13 +1,21 @@
 import 'dotenv/config'
 import cors from 'cors'
 import express from 'express'
-import { messages, users } from './mock/data'
+import { messages, users } from '../mock/data'
 
 const app = express()
 const port = process.env.PORT
 
 app.use(cors())
 
+
+app.get('/messages', (req, res) => {
+  res.send(Object.values(messages))
+})
+
+app.get('/messages/:messageId', (req, res) => {
+  res.send(messages[req.params.messageId])
+})
 
 app.get('/users', (req, res) => {
   res.send(Object.values(users))
