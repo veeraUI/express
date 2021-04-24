@@ -3,8 +3,6 @@ import cors from 'cors'
 import express from 'express'
 import models from '../models'
 import routes from './routes'
-import router from './routes/session'
-
 
 const app = express()
 const port = process.env.PORT
