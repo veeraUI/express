@@ -2,7 +2,7 @@ import 'dotenv/config'
 import cors from 'cors'
 import express from 'express'
 import {v4 as uuidV4} from 'uuid'
-import { messages, users } from '../mock/data'
+import models from '../models'
 
 
 const app = express()
@@ -15,17 +15,20 @@ app.use(express.urlencoded({extended: true}))
 
 /* custom middleware which sets a param me as the user */
 app.use((req, res, next) => {
-  req.me = users[1]
+  req.context = {
+    models,
+    me: models.users[1]
+  }
   next()
 })
 
 
 app.get('/messages', (req, res) => {
-  res.send(Object.values(messages))
+  res.send(Object.values(req.context.models.messages))
 })
 
 app.get('/messages/:messageId', (req, res) => {
-  res.send(messages[req.params.messageId])
+  res.send(req.context.models.messages[req.params.messageId])
 })
 
 app.post('/messages', (req, res) => {
@@ -35,19 +38,19 @@ app.post('/messages', (req, res) => {
     text: req.body.text,
     userId: req.me.id
   }
-  messages[id] = message
-  return res.send(messages)
+  req.context.models.messages[id] = message
+  return res.send(req.context.models.messages)
 })
 
 app.delete('/message/:messageId', (req, res) => {
-  const {[req.params.messageId]: deleteMessage, ...otherMessages} = messages
+  const {[req.params.messageId]: deleteMessage, ...otherMessages} = req.context.models.messages
 
-  messages = otherMessages
+  req.context.models.messages = otherMessages
   return res.send(otherMessages)
 })
 
 app.get('/users', (req, res) => {
-  res.send(Object.values(users))
+  res.send(Object.values(req.context.models.users))
 })
 
 app.post('/users', (req, res) => {
@@ -55,11 +58,11 @@ app.post('/users', (req, res) => {
 })
 
 app.get('/users/:userId', (req, res) => {
-  res.send(users[req.params.userId])
+  res.send(req.context.models.users[req.params.userId])
 })
 
 app.patch('/users/:userId', (req, res) => {
-  res.send(Object.entries(users).find(a => a.id === req.params.userId))
+  res.send(Object.entries(req.context.models.users).find(a => a.id === req.params.userId))
 })
 
 app.delete('/users/:userId', (req, res) => {
