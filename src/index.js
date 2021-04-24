@@ -13,6 +13,12 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
+/* custom middleware which sets a param me as the user */
+app.use((req, res, next) => {
+  req.me = users[1]
+  next()
+})
+
 
 app.get('/messages', (req, res) => {
   res.send(Object.values(messages))
@@ -26,10 +32,18 @@ app.post('/messages', (req, res) => {
   const id = uuidV4()
   const message = {
     id,
-    text: req.body.text
+    text: req.body.text,
+    userId: req.me.id
   }
   messages[id] = message
   return res.send(messages)
+})
+
+app.delete('/message/:messageId', (req, res) => {
+  const {[req.params.messageId]: deleteMessage, ...otherMessages} = messages
+
+  messages = otherMessages
+  return res.send(otherMessages)
 })
 
 app.get('/users', (req, res) => {
