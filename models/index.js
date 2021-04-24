@@ -22,4 +22,7 @@ let messages = {
   },
 };
 
-export {users, messages}
+export default {
+  users,
+  messages
+}
