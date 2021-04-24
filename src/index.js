@@ -1,3 +1,12 @@
 import 'dotenv/config'
-console.log('Env:', process.env.MY_ENV)
-console.log('Hello World, new nodemon')
+import express from 'express'
+
+const app = express()
+const port = 8080
+
+app.get('/', (req, res) => {
+  res.send('Hello World')
+})
+app.listen(port, () => {
+  console.log('Express App listening at Port:', port)
+})
