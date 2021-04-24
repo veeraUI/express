@@ -1,12 +1,17 @@
 import 'dotenv/config'
 import cors from 'cors'
 import express from 'express'
+import {v4 as uuidV4} from 'uuid'
 import { messages, users } from '../mock/data'
+
 
 const app = express()
 const port = process.env.PORT
 
 app.use(cors())
+
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 
 
 app.get('/messages', (req, res) => {
@@ -15,6 +20,16 @@ app.get('/messages', (req, res) => {
 
 app.get('/messages/:messageId', (req, res) => {
   res.send(messages[req.params.messageId])
+})
+
+app.post('/messages', (req, res) => {
+  const id = uuidV4()
+  const message = {
+    id,
+    text: req.body.text
+  }
+  messages[id] = message
+  return res.send(messages)
 })
 
 app.get('/users', (req, res) => {
